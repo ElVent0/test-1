@@ -37,6 +37,7 @@ const Filter = () => {
     const currentParams = new URLSearchParams(location.search);
     currentParams.set("q", query);
     navigate({ search: currentParams.toString() });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   console.log(resultData, firstCompanyArrey, secondCompanyArrey);
@@ -109,14 +110,33 @@ const Filter = () => {
   console.log(query);
 
   return (
-    <div>
-      <p>Questions</p>
-      <input type="text" name="query" value={query} onChange={onChangeQuery} />
-      <ul>
+    <div className="p-10 h-screen bg-blue-100">
+      <p className="text-blue-900 text-2xl font-semibold mb-4">Questions</p>
+      <input
+        className="w-40 h-8 p-2 border border-blue-500 rounded-lg focus:outline-none focus:ring focus:border-blue-700"
+        type="text"
+        name="query"
+        value={query}
+        onChange={onChangeQuery}
+      />
+      <ul className="flex flex-wrap gap-2 mt-4">
         {resultData.length > 0 &&
           getParams().map((item) => (
-            <li key={Math.floor(10000000 + Math.random() * 90000000)}>
+            <li
+              className="text-blue-900 "
+              key={Math.floor(10000000 + Math.random() * 90000000)}
+            >
               <button
+                className={` rounded-lg  ${
+                  searchParams.get("tags") ===
+                    decodeURIComponent(item.value).toLowerCase() ||
+                  searchParams.get("companies") ===
+                    decodeURIComponent(item.value).toLowerCase() ||
+                  searchParams.get("positions") ===
+                    decodeURIComponent(item.value).toLowerCase()
+                    ? "bg-blue-500 text-blue-100 hover:bg-blue-600"
+                    : "bg-blue-200 text-blue-900 hover:bg-blue-300"
+                } duration-300 py-1 px-3`}
                 type="button"
                 onClick={() => onChangeParams(item.value, item.key)}
               >
@@ -125,7 +145,11 @@ const Filter = () => {
             </li>
           ))}
       </ul>
-      <button type="button" onClick={onResetParams}>
+      <button
+        className="mt-4 px-4 py-2 text-blue-900 bg-blue-300 rounded-md hover:bg-blue-500 hover:text-white transition duration-300"
+        type="button"
+        onClick={onResetParams}
+      >
         Reset
       </button>
       {resultData.length > 0 &&
@@ -134,7 +158,12 @@ const Filter = () => {
           firstCompanyArrey.includes(searchParams.get("tags")) ||
           firstCompanyArrey.includes(searchParams.get("companies")) ||
           firstCompanyArrey.includes(searchParams.get("positions"))) && (
-          <p>{resultData[0].title}</p>
+          <p
+            className="mt-12 text-blue-900 text-lg bg-gray-50 rounded-md px-4 py-2
+          w-60"
+          >
+            {resultData[0].title}
+          </p>
         )}
       {resultData.length > 0 &&
         location.search &&
@@ -142,7 +171,12 @@ const Filter = () => {
           secondCompanyArrey.includes(searchParams.get("tags")) ||
           secondCompanyArrey.includes(searchParams.get("companies")) ||
           secondCompanyArrey.includes(searchParams.get("positions"))) && (
-          <p>{resultData[1].title}</p>
+          <p
+            className="mt-4 text-blue-900 text-lg bg-gray-50 rounded-md px-4 py-2
+          w-60"
+          >
+            {resultData[1].title}
+          </p>
         )}
     </div>
   );
