@@ -3,14 +3,20 @@ import data from "../../utils/data.json";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const Filter = () => {
+  // States -----------------------------------------------
+
   const [resultData, setResultData] = useState([]);
   const [query, setQuery] = useState("");
   const [firstCompanyArrey, setFirstCompanyArrey] = useState([]);
   const [secondCompanyArrey, setSecondCompanyArrey] = useState([]);
 
+  // Hooks -----------------------------------------------
+
   const location = useLocation();
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
+
+  // useEffects -----------------------------------------------
 
   useEffect(() => {
     // Тут я "типу" беру дані з беку
@@ -28,25 +34,21 @@ const Filter = () => {
   }, []);
 
   useEffect(() => {
-    if (query === "") {
-      const currentParams = new URLSearchParams(location.search);
-      currentParams.delete("q");
-      navigate({ search: currentParams.toString() });
-      return;
-    }
     const currentParams = new URLSearchParams(location.search);
-    currentParams.set("q", query);
+    if (query === "") {
+      currentParams.delete("q");
+    } else {
+      currentParams.set("q", query);
+    }
     navigate({ search: currentParams.toString() });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
-  console.log(resultData, firstCompanyArrey, secondCompanyArrey);
+  // -----------------------------------------------------
 
   const getParams = () => {
     if (resultData.length > 0) {
       const resultArrayFirst = [];
-      const resultArraySecond = [];
-
       for (const key in resultData[0]) {
         if (key !== "title") {
           const values = resultData[0][key];
@@ -60,6 +62,7 @@ const Filter = () => {
         }
       }
 
+      const resultArraySecond = [];
       for (const key in resultData[1]) {
         if (key !== "title") {
           const values = resultData[1][key];
@@ -88,10 +91,11 @@ const Filter = () => {
           uniqueValues.push(item);
         }
       }
-
       return uniqueValues;
     }
   };
+
+  // Utils -----------------------------------------------
 
   const onChangeParams = (value, key) => {
     const currentParams = new URLSearchParams(location.search);
@@ -107,7 +111,23 @@ const Filter = () => {
     setQuery(e.currentTarget.value);
   };
 
-  console.log(query);
+  const isInParams = (item) => {
+    return (
+      searchParams.get("tags") === decodeURIComponent(item).toLowerCase() ||
+      searchParams.get("companies") ===
+        decodeURIComponent(item).toLowerCase() ||
+      searchParams.get("positions") === decodeURIComponent(item).toLowerCase()
+    );
+  };
+
+  const isThisTitle = (titleNumber, companyArrey) => {
+    resultData[titleNumber].title.includes(searchParams.get("q")) ||
+      companyArrey.includes(searchParams.get("tags")) ||
+      companyArrey.includes(searchParams.get("companies")) ||
+      companyArrey.includes(searchParams.get("positions"));
+  };
+
+  // -----------------------------------------------------
 
   return (
     <div className="p-10 h-screen bg-blue-100">
@@ -117,6 +137,7 @@ const Filter = () => {
         type="text"
         name="query"
         value={query}
+        placeholder="Query"
         onChange={onChangeQuery}
       />
       <ul className="flex flex-wrap gap-2 mt-4">
@@ -128,12 +149,7 @@ const Filter = () => {
             >
               <button
                 className={` rounded-lg  ${
-                  searchParams.get("tags") ===
-                    decodeURIComponent(item.value).toLowerCase() ||
-                  searchParams.get("companies") ===
-                    decodeURIComponent(item.value).toLowerCase() ||
-                  searchParams.get("positions") ===
-                    decodeURIComponent(item.value).toLowerCase()
+                  isInParams(item.value)
                     ? "bg-blue-500 text-blue-100 hover:bg-blue-600"
                     : "bg-blue-200 text-blue-900 hover:bg-blue-300"
                 } duration-300 py-1 px-3`}
@@ -154,10 +170,7 @@ const Filter = () => {
       </button>
       {resultData.length > 0 &&
         location.search &&
-        (resultData[0].title.includes(searchParams.get("q")) ||
-          firstCompanyArrey.includes(searchParams.get("tags")) ||
-          firstCompanyArrey.includes(searchParams.get("companies")) ||
-          firstCompanyArrey.includes(searchParams.get("positions"))) && (
+        isThisTitle(0, firstCompanyArrey) && (
           <p
             className="mt-12 text-blue-900 text-lg bg-gray-50 rounded-md px-4 py-2
           w-60"
@@ -167,10 +180,7 @@ const Filter = () => {
         )}
       {resultData.length > 0 &&
         location.search &&
-        (resultData[1].title.includes(searchParams.get("q")) ||
-          secondCompanyArrey.includes(searchParams.get("tags")) ||
-          secondCompanyArrey.includes(searchParams.get("companies")) ||
-          secondCompanyArrey.includes(searchParams.get("positions"))) && (
+        isThisTitle(1, secondCompanyArrey) && (
           <p
             className="mt-4 text-blue-900 text-lg bg-gray-50 rounded-md px-4 py-2
           w-60"
