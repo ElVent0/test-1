@@ -121,10 +121,12 @@ const Filter = () => {
   };
 
   const isThisTitle = (titleNumber, companyArrey) => {
-    resultData[titleNumber].title.includes(searchParams.get("q")) ||
+    return (
+      resultData[titleNumber].title.includes(searchParams.get("q")) ||
       companyArrey.includes(searchParams.get("tags")) ||
       companyArrey.includes(searchParams.get("companies")) ||
-      companyArrey.includes(searchParams.get("positions"));
+      companyArrey.includes(searchParams.get("positions"))
+    );
   };
 
   // -----------------------------------------------------
