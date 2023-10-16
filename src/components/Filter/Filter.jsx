@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import data from "../../utils/data.json";
-import { v4 as uuidv4 } from "uuid";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const Filter = () => {
@@ -116,7 +115,7 @@ const Filter = () => {
       <ul>
         {resultData.length > 0 &&
           getParams().map((item) => (
-            <li key={uuidv4()}>
+            <li key={Math.floor(10000000 + Math.random() * 90000000)}>
               <button
                 type="button"
                 onClick={() => onChangeParams(item.value, item.key)}
