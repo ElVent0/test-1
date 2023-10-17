@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import data from "../../utils/data.json";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 const Filter = () => {
   // States -----------------------------------------------
@@ -14,7 +14,9 @@ const Filter = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const searchParams = new URLSearchParams(location.search);
+  // const searchParams = new URLSearchParams(location.search);
+
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // useEffects -----------------------------------------------
 
@@ -34,13 +36,14 @@ const Filter = () => {
   }, []);
 
   useEffect(() => {
-    const currentParams = new URLSearchParams(location.search);
+    // const currentParams = new URLSearchParams(location.search);
     if (query === "") {
-      currentParams.delete("q");
+      searchParams.delete("q");
     } else {
-      currentParams.set("q", query);
+      searchParams.set("q", query);
     }
-    navigate({ search: currentParams.toString() });
+    // navigate({ search: searchParams.toString() });
+    setSearchParams(searchParams);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
@@ -98,13 +101,18 @@ const Filter = () => {
   // Utils -----------------------------------------------
 
   const onChangeParams = (value, key) => {
-    const currentParams = new URLSearchParams(location.search);
-    currentParams.set(key, decodeURIComponent(value).toLowerCase());
-    navigate({ search: currentParams.toString() });
+    // const currentParams = new URLSearchParams(location.search);
+    searchParams.set(key, decodeURIComponent(value).toLowerCase());
+    // navigate({ search: searchParams.toString() });
+
+    // searchParams.set(key, value);
+    // // Оновлюємо URL з новими параметрами.
+    setSearchParams(searchParams);
   };
 
   const onResetParams = () => {
-    navigate({ search: "" });
+    // navigate({ search: "" });
+    setSearchParams("");
   };
 
   const onChangeQuery = (e) => {
@@ -204,12 +212,13 @@ const Filter = () => {
                 ...data[index].tags,
               ].map((dataItem) => dataItem.toLowerCase().replace(/\s/g, "+"))
             ) && (
-              <p
-                className="mt-12 text-blue-900 text-lg bg-gray-50 rounded-md px-4 py-2
+              <li
+                className="mt-8 text-blue-900 text-lg bg-gray-50 rounded-md px-4 py-2
           w-60"
+                key={Math.floor(10000000 + Math.random() * 90000000)}
               >
                 {resultData[index].title}
-              </p>
+              </li>
             )
         )}
     </div>
