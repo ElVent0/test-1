@@ -13,7 +13,7 @@ const Filter = () => {
   // Hooks -----------------------------------------------
 
   const location = useLocation();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   // const searchParams = new URLSearchParams(location.search);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -128,13 +128,38 @@ const Filter = () => {
     );
   };
 
-  const isThisTitle = (titleNumber, companyArrey) => {
+  const anyOfParametersIncludes = (companyArrey) => {
     return (
-      resultData[titleNumber].title.includes(searchParams.get("q")) ||
       companyArrey.includes(searchParams.get("tags")) ||
       companyArrey.includes(searchParams.get("companies")) ||
       companyArrey.includes(searchParams.get("positions"))
     );
+  };
+
+  const isThisTitle = (titleNumber, companyArrey) => {
+    if (
+      (searchParams.get("tags") ||
+        searchParams.get("companies") ||
+        searchParams.get("positions")) &&
+      !searchParams.get("q")
+    ) {
+      return (
+        resultData[titleNumber].title.includes(searchParams.get("q")) ||
+        anyOfParametersIncludes(companyArrey)
+      );
+    } else if (
+      (searchParams.get("tags") ||
+        searchParams.get("companies") ||
+        searchParams.get("positions")) &&
+      searchParams.get("q")
+    ) {
+      return (
+        resultData[titleNumber].title.includes(searchParams.get("q")) &&
+        anyOfParametersIncludes(companyArrey)
+      );
+    } else {
+      return resultData[titleNumber].title.includes(searchParams.get("q"));
+    }
   };
 
   // -----------------------------------------------------
