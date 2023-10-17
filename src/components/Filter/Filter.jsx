@@ -1,21 +1,23 @@
 import { useState, useEffect } from "react";
 import data from "../../utils/data.json";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
+// import useGetParams from "../../hooks/useGetParams";
+import {
+  isInParams,
+  isThisTitle,
+  companyArrey,
+  getParams,
+} from "../../utils/utils";
 
 const Filter = () => {
   // States -----------------------------------------------
 
   const [resultData, setResultData] = useState([]);
   const [query, setQuery] = useState("");
-  // const [firstCompanyArrey, setFirstCompanyArrey] = useState([]);
-  // const [secondCompanyArrey, setSecondCompanyArrey] = useState([]);
 
   // Hooks -----------------------------------------------
 
   const location = useLocation();
-  // const navigate = useNavigate();
-  // const searchParams = new URLSearchParams(location.search);
-
   const [searchParams, setSearchParams] = useSearchParams();
 
   // useEffects -----------------------------------------------
@@ -23,143 +25,31 @@ const Filter = () => {
   useEffect(() => {
     // Тут я "типу" беру дані з беку
     setResultData(data);
-    // setFirstCompanyArrey(
-    //   [...data[0].companies, ...data[0].positions, ...data[0].tags].map(
-    //     (item) => item.toLowerCase().replace(/\s/g, "+")
-    //   )
-    // );
-    // setSecondCompanyArrey(
-    //   [...data[1].companies, ...data[1].positions, ...data[1].tags].map(
-    //     (item) => item.toLowerCase().replace(/\s/g, "+")
-    //   )
-    // );
   }, []);
 
   useEffect(() => {
-    // const currentParams = new URLSearchParams(location.search);
     if (query === "") {
       searchParams.delete("q");
     } else {
       searchParams.set("q", query);
     }
-    // navigate({ search: searchParams.toString() });
     setSearchParams(searchParams);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
-  // -----------------------------------------------------
-
-  const getParams = () => {
-    if (resultData.length > 0) {
-      const resultArrayFirst = [];
-      for (const key in resultData[0]) {
-        if (key !== "title") {
-          const values = resultData[0][key];
-          for (const value of values) {
-            const obj = {
-              key: key,
-              value: value,
-            };
-            resultArrayFirst.push(obj);
-          }
-        }
-      }
-
-      const resultArraySecond = [];
-      for (const key in resultData[1]) {
-        if (key !== "title") {
-          const values = resultData[1][key];
-          for (const value of values) {
-            const obj = {
-              key: key,
-              value: value,
-            };
-            resultArraySecond.push(obj);
-          }
-        }
-      }
-
-      const resultParameters = [...resultArrayFirst, ...resultArraySecond];
-
-      const uniqueValues = [];
-      const seenValues = {};
-
-      for (const item of resultParameters) {
-        const { key, value } = item;
-        if (!seenValues[key]) {
-          seenValues[key] = {};
-        }
-        if (!seenValues[key][value]) {
-          seenValues[key][value] = true;
-          uniqueValues.push(item);
-        }
-      }
-      return uniqueValues;
-    }
-  };
-
-  // Utils -----------------------------------------------
+  // onClick / onChange / onSubmit functions ------------------
 
   const onChangeParams = (value, key) => {
-    // const currentParams = new URLSearchParams(location.search);
     searchParams.set(key, decodeURIComponent(value).toLowerCase());
-    // navigate({ search: searchParams.toString() });
-
-    // searchParams.set(key, value);
-    // // Оновлюємо URL з новими параметрами.
     setSearchParams(searchParams);
   };
 
   const onResetParams = () => {
-    // navigate({ search: "" });
     setSearchParams("");
   };
 
   const onChangeQuery = (e) => {
     setQuery(e.currentTarget.value);
-  };
-
-  const isInParams = (item) => {
-    return (
-      searchParams.get("tags") === decodeURIComponent(item).toLowerCase() ||
-      searchParams.get("companies") ===
-        decodeURIComponent(item).toLowerCase() ||
-      searchParams.get("positions") === decodeURIComponent(item).toLowerCase()
-    );
-  };
-
-  const anyOfParametersIncludes = (companyArrey) => {
-    return (
-      companyArrey.includes(searchParams.get("tags")) ||
-      companyArrey.includes(searchParams.get("companies")) ||
-      companyArrey.includes(searchParams.get("positions"))
-    );
-  };
-
-  const isThisTitle = (titleNumber, companyArrey) => {
-    if (
-      (searchParams.get("tags") ||
-        searchParams.get("companies") ||
-        searchParams.get("positions")) &&
-      !searchParams.get("q")
-    ) {
-      return (
-        resultData[titleNumber].title.includes(searchParams.get("q")) ||
-        anyOfParametersIncludes(companyArrey)
-      );
-    } else if (
-      (searchParams.get("tags") ||
-        searchParams.get("companies") ||
-        searchParams.get("positions")) &&
-      searchParams.get("q")
-    ) {
-      return (
-        resultData[titleNumber].title.includes(searchParams.get("q")) &&
-        anyOfParametersIncludes(companyArrey)
-      );
-    } else {
-      return resultData[titleNumber].title.includes(searchParams.get("q"));
-    }
   };
 
   // -----------------------------------------------------
@@ -177,14 +67,14 @@ const Filter = () => {
       />
       <ul className="flex flex-wrap gap-2 mt-4">
         {resultData.length > 0 &&
-          getParams().map((item) => (
+          getParams(resultData).map((item) => (
             <li
               className="text-blue-900 "
               key={Math.floor(10000000 + Math.random() * 90000000)}
             >
               <button
                 className={` rounded-lg  ${
-                  isInParams(item.value)
+                  isInParams(item.value, searchParams)
                     ? "bg-blue-500 text-blue-100 hover:bg-blue-600"
                     : "bg-blue-200 text-blue-900 hover:bg-blue-300"
                 } duration-300 py-1 px-3`}
@@ -203,39 +93,15 @@ const Filter = () => {
       >
         Reset
       </button>
-      {/* -------------------------------------------- */}
-      {/* {resultData.length > 0 &&
-        location.search &&
-        isThisTitle(0, firstCompanyArrey) && (
-          <p
-            className="mt-12 text-blue-900 text-lg bg-gray-50 rounded-md px-4 py-2
-          w-60"
-          >
-            {resultData[0].title}
-          </p>
-        )}
-      {resultData.length > 0 &&
-        location.search &&
-        isThisTitle(1, secondCompanyArrey) && (
-          <p
-            className="mt-4 text-blue-900 text-lg bg-gray-50 rounded-md px-4 py-2
-            w-60"
-          >
-            {resultData[1].title}
-          </p>
-        )} */}
-      {/* -------------------------------------------- */}
       {resultData.length > 0 &&
         location.search &&
         resultData.map(
           (item, index) =>
             isThisTitle(
               index,
-              [
-                ...data[index].companies,
-                ...data[index].positions,
-                ...data[index].tags,
-              ].map((dataItem) => dataItem.toLowerCase().replace(/\s/g, "+"))
+              companyArrey(data, index),
+              searchParams,
+              resultData
             ) && (
               <li
                 className="mt-8 text-blue-900 text-lg bg-gray-50 rounded-md px-4 py-2
