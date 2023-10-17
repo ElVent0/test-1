@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import data from "../../utils/data.json";
 import { useLocation, useSearchParams } from "react-router-dom";
-// import useGetParams from "../../hooks/useGetParams";
 import {
   isInParams,
   isThisTitle,
   companyArrey,
   getParams,
-} from "../../utils/utils";
+} from "../../utils/filterUtils";
 
 const Filter = () => {
   // States -----------------------------------------------
