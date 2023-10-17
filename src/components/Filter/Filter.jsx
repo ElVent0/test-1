@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import data from "../../utils/data.json";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const Filter = () => {
   // States -----------------------------------------------
 
   const [resultData, setResultData] = useState([]);
   const [query, setQuery] = useState("");
-  const [firstCompanyArrey, setFirstCompanyArrey] = useState([]);
-  const [secondCompanyArrey, setSecondCompanyArrey] = useState([]);
+  // const [firstCompanyArrey, setFirstCompanyArrey] = useState([]);
+  // const [secondCompanyArrey, setSecondCompanyArrey] = useState([]);
 
   // Hooks -----------------------------------------------
 
@@ -21,16 +21,16 @@ const Filter = () => {
   useEffect(() => {
     // Тут я "типу" беру дані з беку
     setResultData(data);
-    setFirstCompanyArrey(
-      [...data[0].companies, ...data[0].positions, ...data[0].tags].map(
-        (item) => item.toLowerCase().replace(/\s/g, "+")
-      )
-    );
-    setSecondCompanyArrey(
-      [...data[1].companies, ...data[1].positions, ...data[1].tags].map(
-        (item) => item.toLowerCase().replace(/\s/g, "+")
-      )
-    );
+    // setFirstCompanyArrey(
+    //   [...data[0].companies, ...data[0].positions, ...data[0].tags].map(
+    //     (item) => item.toLowerCase().replace(/\s/g, "+")
+    //   )
+    // );
+    // setSecondCompanyArrey(
+    //   [...data[1].companies, ...data[1].positions, ...data[1].tags].map(
+    //     (item) => item.toLowerCase().replace(/\s/g, "+")
+    //   )
+    // );
   }, []);
 
   useEffect(() => {
@@ -170,7 +170,8 @@ const Filter = () => {
       >
         Reset
       </button>
-      {resultData.length > 0 &&
+      {/* -------------------------------------------- */}
+      {/* {resultData.length > 0 &&
         location.search &&
         isThisTitle(0, firstCompanyArrey) && (
           <p
@@ -185,10 +186,31 @@ const Filter = () => {
         isThisTitle(1, secondCompanyArrey) && (
           <p
             className="mt-4 text-blue-900 text-lg bg-gray-50 rounded-md px-4 py-2
-          w-60"
+            w-60"
           >
             {resultData[1].title}
           </p>
+        )} */}
+      {/* -------------------------------------------- */}
+      {resultData.length > 0 &&
+        location.search &&
+        resultData.map(
+          (item, index) =>
+            isThisTitle(
+              index,
+              [
+                ...data[index].companies,
+                ...data[index].positions,
+                ...data[index].tags,
+              ].map((dataItem) => dataItem.toLowerCase().replace(/\s/g, "+"))
+            ) && (
+              <p
+                className="mt-12 text-blue-900 text-lg bg-gray-50 rounded-md px-4 py-2
+          w-60"
+              >
+                {resultData[index].title}
+              </p>
+            )
         )}
     </div>
   );

@@ -15,5 +15,16 @@
       "Data Scientist",
       "ML Engineer"
     ]
+  },
+  {
+    "title": "easy question to solve",
+    "tags": ["sql", "probability", "statistics"],
+    "companies": ["facebook", "linkedin", "amazon", "google"],
+    "positions": [
+      "software engineer",
+      "marketing Analyst",
+      "Data Scientist",
+      "ML Engineer"
+    ]
   }
 ]
