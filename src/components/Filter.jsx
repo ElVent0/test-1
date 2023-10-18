@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import data from "../api/data.json";
 import { useSearchParams } from "react-router-dom";
-import { isInParams, getParams } from "../utils/index.js";
+import { isInParams } from "../utils/index.js";
 import useGetParams from "../hooks/useGetParams";
-import AnswerItem from "./AnswerItem.jsx";
+import AnswerItems from "./AnswerItems.jsx";
 
 const Filter = () => {
   const [resultData, setResultData] = useState([]);
   const [query, setQuery] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
+  const params = useGetParams(resultData);
 
   useEffect(() => {
     setResultData(data);
@@ -28,17 +29,6 @@ const Filter = () => {
     setSearchParams(searchParams);
   };
 
-  const onResetParams = () => {
-    setSearchParams("");
-  };
-
-  const onChangeQuery = (e) => {
-    setQuery(e.currentTarget.value);
-  };
-
-  const params = useGetParams(resultData);
-  console.log(params);
-
   return (
     <div className="p-10 h-screen bg-blue-100">
       <p className="text-blue-900 text-2xl font-semibold mb-4">Questions</p>
@@ -48,7 +38,7 @@ const Filter = () => {
         name="query"
         value={query}
         placeholder="Query"
-        onChange={onChangeQuery}
+        onChange={(e) => setQuery(e.currentTarget.value)}
       />
       <ul className="flex flex-wrap gap-2 mt-4">
         {!!resultData &&
@@ -71,12 +61,12 @@ const Filter = () => {
       <button
         className="mt-4 px-4 py-2 text-blue-900 bg-blue-300 rounded-md hover:bg-blue-500 hover:text-white transition duration-300"
         type="button"
-        onClick={onResetParams}
+        onClick={() => setSearchParams("")}
       >
         Reset
       </button>
       {!!resultData && (
-        <AnswerItem
+        <AnswerItems
           resultData={resultData}
           data={data}
           searchParams={searchParams}
