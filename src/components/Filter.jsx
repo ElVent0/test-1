@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import data from "../api/data.json";
+import data from "../data/data.json";
 import { useSearchParams } from "react-router-dom";
 import { isInParams } from "../utils/index.js";
 import useGetParams from "../hooks/useGetParams";
