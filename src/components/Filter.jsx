@@ -1,28 +1,16 @@
 import { useState, useEffect } from "react";
-import data from "../../utils/data.json";
-import { useLocation, useSearchParams } from "react-router-dom";
-import {
-  isInParams,
-  isThisTitle,
-  companyArrey,
-  getParams,
-} from "../../utils/filterUtils";
+import data from "../api/data.json";
+import { useSearchParams } from "react-router-dom";
+import { isInParams, getParams } from "../utils/index.js";
+import useGetParams from "../hooks/useGetParams";
+import AnswerItem from "./AnswerItem.jsx";
 
 const Filter = () => {
-  // States -----------------------------------------------
-
   const [resultData, setResultData] = useState([]);
   const [query, setQuery] = useState("");
-
-  // Hooks -----------------------------------------------
-
-  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // useEffects -----------------------------------------------
-
   useEffect(() => {
-    // Тут я "типу" беру дані з беку
     setResultData(data);
   }, []);
 
@@ -33,10 +21,7 @@ const Filter = () => {
       searchParams.set("q", query);
     }
     setSearchParams(searchParams);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
-
-  // onClick / onChange / onSubmit functions ------------------
 
   const onChangeParams = (value, key) => {
     searchParams.set(key, decodeURIComponent(value).toLowerCase());
@@ -51,7 +36,8 @@ const Filter = () => {
     setQuery(e.currentTarget.value);
   };
 
-  // -----------------------------------------------------
+  const params = useGetParams(resultData);
+  console.log(params);
 
   return (
     <div className="p-10 h-screen bg-blue-100">
@@ -65,12 +51,9 @@ const Filter = () => {
         onChange={onChangeQuery}
       />
       <ul className="flex flex-wrap gap-2 mt-4">
-        {resultData.length > 0 &&
-          getParams(resultData).map((item) => (
-            <li
-              className="text-blue-900 "
-              key={Math.floor(10000000 + Math.random() * 90000000)}
-            >
+        {!!resultData &&
+          params.map((item, index) => (
+            <li className="text-blue-900 " key={index}>
               <button
                 className={` rounded-lg  ${
                   isInParams(item.value, searchParams)
@@ -92,25 +75,13 @@ const Filter = () => {
       >
         Reset
       </button>
-      {resultData.length > 0 &&
-        location.search &&
-        resultData.map(
-          (item, index) =>
-            isThisTitle(
-              index,
-              companyArrey(data, index),
-              searchParams,
-              resultData
-            ) && (
-              <li
-                className="mt-8 text-blue-900 text-lg bg-gray-50 rounded-md px-4 py-2
-          w-60"
-                key={Math.floor(10000000 + Math.random() * 90000000)}
-              >
-                {resultData[index].title}
-              </li>
-            )
-        )}
+      {!!resultData && (
+        <AnswerItem
+          resultData={resultData}
+          data={data}
+          searchParams={searchParams}
+        />
+      )}
     </div>
   );
 };

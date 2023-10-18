@@ -1,6 +1,5 @@
-import Container from "../components/Container/Container";
-import Filter from "../components/Filter/Filter";
-import DragAndDrop from "../components/DragAndDrop/DragAndDrop";
+import Container from "./Container.jsx";
+import Filter from "./Filter.jsx";
 import { Routes, Route } from "react-router-dom";
 
 const App = () => {
@@ -8,7 +7,6 @@ const App = () => {
     <Routes>
       <Route path="/" element={<Container />}>
         <Route index element={<Filter />} />
-        <Route path="/dnd" element={<DragAndDrop />} />
       </Route>
     </Routes>
   );
